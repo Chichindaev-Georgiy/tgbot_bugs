@@ -2,7 +2,7 @@ package ru.skillfactorydemo.tgbot.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import ru.skillfactorydemo.tgbot.dto.GetCursOnDateXml;
+import ru.skillfactorydemo.tgbot.dto.GetCursOnDateXML;
 import ru.skillfactorydemo.tgbot.dto.GetCursOnDateXmlResponse;
 import ru.skillfactorydemo.tgbot.dto.ValuteCursOnDate;
 
@@ -19,13 +19,14 @@ public class CentralRussianBankService extends WebServiceTemplate {
     private String cbrApiUrl;
 
     public List<ValuteCursOnDate> getCurrenciesFromCbr() throws DatatypeConfigurationException {
-        final GetCursOnDateXml getCursOnDateXML = new GetCursOnDateXml();
+        final GetCursOnDateXML getCursOnDateXML = new GetCursOnDateXML();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(new Date());
 
         XMLGregorianCalendar xmlGregCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
         getCursOnDateXML.setOnDate(xmlGregCal);
 
+        System.out.println(getCursOnDateXML);
         GetCursOnDateXmlResponse response = (GetCursOnDateXmlResponse) marshalSendAndReceive(cbrApiUrl, getCursOnDateXML);
         if (response == null) {
             throw new IllegalStateException("Could not get response from CBR Service");

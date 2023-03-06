@@ -15,18 +15,34 @@ import ru.skillfactorydemo.tgbot.dto.ValuteCursOnDate;
 import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import ru.skillfactorydemo.tgbot.entity.ActiveChat;
+import ru.skillfactorydemo.tgbot.repository.ActiveChatRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BotService extends TelegramLongPollingBot{
+    private static final String CURRENT_RATES = "/currentrates";
+    private static final String ADD_INCOME = "/addincome";
+    private static final String ADD_SPEND = "/addspend";
 
     private final CentralRussianBankService centralRussianBankService;
+    private final FinanceService financeService;
+    private final ActiveChatRepository activeChatRepository;
 
     @Value("${bot.api.key}")// Сюда будет вставлено значение из application.properties, в котором будет указан api key, полученный от BotFather
     private String apiKey;
 
     @Value("${bot.name}")
     private String name;
+
+    private Map<Long, List<String>> previousCommands = new ConcurrentHashMap<>();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -35,18 +51,57 @@ public class BotService extends TelegramLongPollingBot{
             SendMessage response = new SendMessage();
             Long chatId = message.getChatId();
             response.setChatId(String.valueOf(chatId));
-            if ("/currentrates".equalsIgnoreCase(message.getText())) {
+            if (CURRENT_RATES.equalsIgnoreCase(message.getText())) {
                 for (ValuteCursOnDate valuteCursOnDate : centralRussianBankService.getCurrenciesFromCbr()) {
-                    response.setText(StringUtils.defaultIfBlank(response.getText(), "" + valuteCursOnDate.getName() +
-                            valuteCursOnDate.getCourse()) + "\n");
+                    response.setText(StringUtils.defaultIfBlank(response.getText(), "") + valuteCursOnDate.getName() +
+                            " - " + valuteCursOnDate.getCourse() + "\n");
                 }
+            } else if (ADD_INCOME.equalsIgnoreCase(message.getText())) {
+                response.setText("Отправьте мне сумму полученного дохода");
+            } else if (ADD_SPEND.equalsIgnoreCase(message.getText())) {
+                response.setText("Отправьте мне сумму расходов");
+            } else {
+                response.setText(financeService.addFinanceOperation(getPreviousCommand(message.getChatId()), message.getText(), message.getChatId()));
             }
+            putPreviousCommand(message.getChatId(), message.getText());
             execute(response);
+            if (activeChatRepository.findActiveChatByChatId(chatId).isEmpty()) {
+                ActiveChat activeChat = new ActiveChat();
+                activeChat.setChatId(chatId);
+                activeChatRepository.save(activeChat);
+            }
         } catch (TelegramApiException e) {
             e.printStackTrace();
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void sendNotificationToAllActiveChats(String message, Set<Long> chatIds) {
+        for (Long id : chatIds) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(String.valueOf(id));
+            sendMessage.setText(message);
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void putPreviousCommand(Long chatId, String command) {
+        if (previousCommands.get(chatId) == null) {
+            List<String> commands = new ArrayList<>();
+            commands.add(command);
+            previousCommands.put(chatId, commands);
+        } else {
+            previousCommands.get(chatId).add(command);
+        }
+    }
+
+    private String getPreviousCommand(Long chatId) {
+        return previousCommands.get(chatId).get(previousCommands.get(chatId).size() - 1);
     }
 
     @PostConstruct

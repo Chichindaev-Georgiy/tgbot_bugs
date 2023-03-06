@@ -2,12 +2,13 @@ package ru.skillfactorydemo.tgbot.dto;
 
 import lombok.Data;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "GetCursOnDateResult")
 public class GetCursOnDateXmlResult {
 
     @XmlElementWrapper(name = "ValuteData", namespace = "")

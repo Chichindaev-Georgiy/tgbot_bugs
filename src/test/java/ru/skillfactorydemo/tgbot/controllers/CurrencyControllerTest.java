@@ -1,4 +1,4 @@
-package ru.skillfactorydemo.tgbot;
+package ru.skillfactorydemo.tgbot.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +14,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class CurrencyControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Test
-	public void testWhenAskAboutAllCurrencies() throws Exception {
-		mockMvc.perform(get("/getCurrencies"))
-				.andExpect(status().isOk())
-				.andDo(print());
-	}
+    @Test
+    public void testWhenAskAboutAllCurrencies() throws Exception {
+        mockMvc.perform(get("/getCurrencies"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
-	@Test
-	public void testWhenAskAboutOneCurrency() throws Exception {
-		mockMvc.perform(get("/getCurrency/USD"))
-				.andExpect(status().isOk())
-				.andDo(print());
-	}
+    @Test
+    public void testWhenAskAboutOneCurrency() throws Exception {
+        mockMvc.perform(get("/getCurrency/USD"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
 }
