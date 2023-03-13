@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+        <property name="hibernate.connection.driver.class">org.hsqldb.jdbcDriver</property>
+        <property name="hibernate.connection.driver.url">jdbc:hsqldb:mem:eventdb</property>
+        <property name="hibernate.connection.driver.username">sa</property>
+        <property name="hibernate.connection.driver.password"/>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
+        
+        <property name="show_sql">true</property>
+
+    </session-factory>
+</hibernate-configuration>
