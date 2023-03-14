@@ -32,12 +32,12 @@ public class FinanceServiceTest {
     }
 
 
-//    @DisplayName("ADD_INCOME_test")
-//    @Test
-//    public void addFinanceOperationAddIncomeTest() {
-//        Optional<Incomes> incomes = incomeRepository.findById(12345L);
-//        Assertions.assertTrue(incomes.isPresent());
-//        Assertions.assertEquals(new BigDecimal("3000.00"),incomes.get().getIncome());
-//    }
+    @DisplayName("ADD_INCOME_test")
+    @Test
+    public void addFinanceOperationAddIncomeTest() {
+        Optional<Incomes> incomes = incomeRepository.findById(12345L);
+        Assertions.assertTrue(incomes.isPresent());
+        Assertions.assertEquals(new BigDecimal("3000.00"),incomes.get().getIncome());
+    }
 
 }
