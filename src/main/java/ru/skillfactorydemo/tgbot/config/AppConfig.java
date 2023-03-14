@@ -24,7 +24,7 @@ public class AppConfig {
         CentralRussianBankService cbrService = new CentralRussianBankService();
         Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
         MessageFactory msgFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-        SaajSoapMessageFactory newSoapMessageFactory=  new SaajSoapMessageFactory(msgFactory);
+        SaajSoapMessageFactory newSoapMessageFactory = new SaajSoapMessageFactory(msgFactory);
         cbrService.setMessageFactory(newSoapMessageFactory);
 
         jaxb2Marshaller.setClassesToBeBound(
